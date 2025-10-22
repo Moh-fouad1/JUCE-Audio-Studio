@@ -1,0 +1,17 @@
+# Ignore Visual Studio cache
+.vs/
+
+# JUCE and build artifacts
+Builds/
+JuceLibraryCode/
+*.obj
+*.pdb
+*.user
+*.exe
+*.dll
+*.log
+*.ipch
+
+# OS junk
+Thumbs.db
+.DS_Store
