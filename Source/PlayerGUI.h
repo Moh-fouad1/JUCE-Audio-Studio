@@ -27,13 +27,16 @@ private:
     juce::TextButton stopButton{ "Stop" };
 
     //new buttons 
-	juce::TextButton playButton{ "►" };
-	juce::TextButton pauseButton{ "⏸" };
-	juce::TextButton StartButton{ "|◄" };
-	juce::TextButton EndButton{ "►|" };
-    
+    juce::TextButton playButton{ "Play" };
+    juce::TextButton pauseButton{ "⏸" };
+    juce::TextButton StartButton{ "|◄" };
+    juce::TextButton EndButton{ "►|" };
+
+    juce::TextButton muteButton{ "Mute" };
+    bool Mute = false;
+
     //adjustable volume slider
-    juce::Slider volumeSlider;  
+    juce::Slider volumeSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };

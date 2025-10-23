@@ -11,14 +11,15 @@ PlayerGUI::PlayerGUI()
     volumeSlider.setRange(1, 100, 1);
     volumeSlider.setValue(50);
     volumeSlider.addListener(this);
-	addAndMakeVisible(loadButton);
-	addAndMakeVisible(restartButton);
-	addAndMakeVisible(stopButton);
-	addAndMakeVisible(playButton);
-	addAndMakeVisible(pauseButton);
-	addAndMakeVisible(StartButton);
-	addAndMakeVisible(EndButton);
+    addAndMakeVisible(loadButton);
+    addAndMakeVisible(restartButton);
+    addAndMakeVisible(stopButton);
+    addAndMakeVisible(playButton);
+    addAndMakeVisible(pauseButton);
+    addAndMakeVisible(StartButton);
+    addAndMakeVisible(EndButton);
     addAndMakeVisible(volumeSlider);
+    addAndMakeVisible(muteButton);
 
     loadButton.addListener(this);
     restartButton.addListener(this);
@@ -28,6 +29,7 @@ PlayerGUI::PlayerGUI()
     StartButton.addListener(this);
     EndButton.addListener(this);
     volumeSlider.addListener(this);
+    muteButton.addListener(this);
 }
 
 PlayerGUI::~PlayerGUI() {}
@@ -36,13 +38,16 @@ void PlayerGUI::resized()
 {
     int y = 20;
     loadButton.setBounds(20, y, 100, 40);
-    restartButton.setBounds(140, y, 80, 40);
-    stopButton.setBounds(240, y, 80, 40);
+    restartButton.setBounds(240, y, 80, 40);
+    stopButton.setBounds(340, y, 80, 40);
     volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
+    playButton.setBounds(140, y, 80, 40);
+    muteButton.setBounds(440, y, 80, 40);
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
 {
+    float lastVolume = 50.0;
     if (button == &loadButton)
     {
         fileChooser = std::make_unique<juce::FileChooser>(
@@ -65,7 +70,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     else if (button == &stopButton)
     {
         playerAudio.stop();
-		playerAudio.setPosition(0.0);
+        playerAudio.setPosition(0.0);
     }
     else if (button == &playButton)
     {
@@ -73,7 +78,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     }
     else if (button == &pauseButton)
     {
-		playerAudio.stop(); // wont reset position, just pauses
+        playerAudio.stop(); // wont reset position, just pauses
     }
     else if (button == &StartButton)
     {
@@ -84,6 +89,20 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         double length = playerAudio.getLengthInSeconds();
         if (length > 0.0)
             playerAudio.setPosition(length);
+    }
+    else if (button == &muteButton)
+    {
+        if (!Mute) {
+            playerAudio.setGain(0.0);
+            Mute = true;
+            muteButton.setButtonText("Unmute");
+        }
+        else if (Mute) {
+            playerAudio.setGain(50.0);
+            Mute = false;
+            muteButton.setButtonText("Mute");
+        }
+
     }
 }
 
