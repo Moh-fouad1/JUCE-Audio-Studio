@@ -18,6 +18,7 @@ public:
     void stop();
     void setGain(float gain);
     void setPosition(double pos);
+    void setLooping(bool shouldLoop);
 
 	double getLengthInSeconds() const;
 

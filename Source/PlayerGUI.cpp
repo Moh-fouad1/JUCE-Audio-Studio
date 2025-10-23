@@ -1,4 +1,4 @@
-#include "PlayerGUI.h"
+﻿#include "PlayerGUI.h"
 
 PlayerGUI::PlayerGUI()
 {
@@ -18,6 +18,8 @@ PlayerGUI::PlayerGUI()
 	addAndMakeVisible(pauseButton);
 	addAndMakeVisible(StartButton);
 	addAndMakeVisible(EndButton);
+    addAndMakeVisible(loopButton);
+    loopButton.addListener(this);
     addAndMakeVisible(volumeSlider);
 
     loadButton.addListener(this);
@@ -27,6 +29,7 @@ PlayerGUI::PlayerGUI()
     pauseButton.addListener(this);
     StartButton.addListener(this);
     EndButton.addListener(this);
+    loopButton.addListener(this);
     volumeSlider.addListener(this);
 }
 
@@ -59,6 +62,11 @@ void PlayerGUI::resized()
 
     // Volume slider below buttons
     volumeSlider.setBounds(20, y + buttonHeight + 40, getWidth() - 40, 30);
+    loadButton.setBounds(20, y, 100, 40);
+    restartButton.setBounds(140, y, 80, 40);
+    stopButton.setBounds(240, y, 80, 40);
+    loopButton.setBounds(350, y, 100, 40);
+    volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
 }
 
 
@@ -105,6 +113,12 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         double length = playerAudio.getLengthInSeconds();
         if (length > 0.0)
             playerAudio.setPosition(length);
+    }
+    else if (button == &loopButton)
+    {
+        isLooping = !isLooping;
+        playerAudio.setLooping(isLooping);
+        loopButton.setButtonText(isLooping ? "unloop" : "loop");
     }
 }
 
