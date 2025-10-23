@@ -31,7 +31,7 @@ private:
 	juce::TextButton pauseButton{ "⏸" };
 	juce::TextButton StartButton{ "|◄" };
 	juce::TextButton EndButton{ "►|" };
-    juce::TextButton loopButton{ "⟳" };
+    juce::TextButton loopButton{ "loop" };
     bool isLooping = false;
     
     
