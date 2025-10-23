@@ -2,76 +2,54 @@
 
 PlayerGUI::PlayerGUI()
 {
-    for (auto* btn : { &loadButton, &restartButton, &stopButton })
+    // Buttons
+    for (auto* btn : { &loadButton, &playPauseButton, &restartButton, &stopButton, &StartButton, &EndButton, &loopButton })
     {
-        addAndMakeVisible(btn);
+        addAndMakeVisible(*btn);
         btn->addListener(this);
     }
 
+    // Volume slider
     volumeSlider.setRange(1, 100, 1);
     volumeSlider.setValue(50);
     volumeSlider.addListener(this);
-	addAndMakeVisible(loadButton);
-	addAndMakeVisible(restartButton);
-	addAndMakeVisible(stopButton);
-	addAndMakeVisible(playButton);
-	addAndMakeVisible(pauseButton);
-	addAndMakeVisible(StartButton);
-	addAndMakeVisible(EndButton);
-    addAndMakeVisible(loopButton);
-    loopButton.addListener(this);
     addAndMakeVisible(volumeSlider);
-
-    loadButton.addListener(this);
-    restartButton.addListener(this);
-    stopButton.addListener(this);
-    playButton.addListener(this);
-    pauseButton.addListener(this);
-    StartButton.addListener(this);
-    EndButton.addListener(this);
-    loopButton.addListener(this);
-    volumeSlider.addListener(this);
 }
+
 
 PlayerGUI::~PlayerGUI() {}
 
 void PlayerGUI::resized()
 {
-    int buttonWidth = 80;
-    int buttonHeight = 40;
+    int buttonWidth = 70;
+    int buttonHeight = 35;
     int spacing = 10;
     int x = 20;
     int y = 20;
 
-    loadButton.setBounds(x, y, 100, buttonHeight);
-    x += 100 + spacing;
+    auto place = [&](juce::Button& btn)
+        {
+            btn.setBounds(x, y, buttonWidth, buttonHeight);
+            x += buttonWidth + spacing;
+        };
 
-    playPauseButton.setBounds(x, y, buttonWidth, buttonHeight);
-    x += buttonWidth + spacing;
-
-    restartButton.setBounds(x, y, buttonWidth, buttonHeight);
-    x += buttonWidth + spacing;
-
-    stopButton.setBounds(x, y, buttonWidth, buttonHeight);
-    x += buttonWidth + spacing;
-
-    startButton.setBounds(x, y, buttonWidth, buttonHeight);
-    x += buttonWidth + spacing;
-
-    endButton.setBounds(x, y, buttonWidth, buttonHeight);
+    place(loadButton);
+    place(playPauseButton);
+    place(restartButton);
+    place(stopButton);
+    place(StartButton);
+    place(EndButton);
+    place(loopButton);
 
     // Volume slider below buttons
     volumeSlider.setBounds(20, y + buttonHeight + 40, getWidth() - 40, 30);
-    loadButton.setBounds(20, y, 100, 40);
-    restartButton.setBounds(140, y, 80, 40);
-    stopButton.setBounds(240, y, 80, 40);
-    loopButton.setBounds(350, y, 100, 40);
-    volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
 }
 
 
 void PlayerGUI::buttonClicked(juce::Button* button)
 {
+    
+
     if (button == &loadButton)
     {
         fileChooser = std::make_unique<juce::FileChooser>(
@@ -96,13 +74,23 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         playerAudio.stop();
 		playerAudio.setPosition(0.0);
     }
-    else if (button == &playButton)
+    else if (button == &playPauseButton)
     {
-        playerAudio.play();
-    }
-    else if (button == &pauseButton)
-    {
-		playerAudio.stop(); // wont reset position, just pauses
+        auto& transport = playerAudio.getTransportSource();
+
+        if (transport.isPlaying())
+        {
+            double currentPos = transport.getCurrentPosition();
+            transport.stop();
+			transport.setPosition(currentPos); // maintain position
+            playPauseButton.setButtonText("Play");
+        }
+        else
+        {
+            transport.start();                   
+            playPauseButton.setButtonText("Pause");
+        }
+
     }
     else if (button == &StartButton)
     {

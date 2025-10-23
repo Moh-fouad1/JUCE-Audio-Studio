@@ -74,4 +74,8 @@ double PlayerAudio::getLengthInSeconds() const
 
     return 0.0;
 }
+bool PlayerAudio::isPlaying() const
+{
+    return transportSource.isPlaying();
+}
 
