@@ -27,15 +27,15 @@ bool PlayerAudio::LoadFile(const juce::File& file) {
     {
         if (auto* reader = formatManager.createReaderFor(file))
         {
-            // 🔑 Disconnect old source first
+           
             transportSource.stop();
             transportSource.setSource(nullptr);
             readerSource.reset();
 
-            // Create new reader source
+           
             readerSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
 
-            // Attach safely
+            
             transportSource.setSource(readerSource.get(),
                 0,
                 nullptr,
@@ -44,3 +44,10 @@ bool PlayerAudio::LoadFile(const juce::File& file) {
         }
     }
 }
+
+bool PlayerAudio::isPlaying() const
+{
+    return transportSource.isPlaying();
+}
+
+
