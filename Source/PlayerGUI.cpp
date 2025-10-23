@@ -93,7 +93,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     {
         isLooping = !isLooping;
         playerAudio.setLooping(isLooping);
-        loopButton.setButtonText(isLooping ? "⟲" : "⟳");
+        loopButton.setButtonText(isLooping ? "unloop" : "loop");
     }
 }
 

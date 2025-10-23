@@ -2,7 +2,7 @@
 
 MainComponent::MainComponent()
 {
-    setSize(500, 300);
+    setSize(900, 400);
     addAndMakeVisible(player);
     setAudioChannels(0, 2);
 }
