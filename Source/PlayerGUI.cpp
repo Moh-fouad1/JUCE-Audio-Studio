@@ -34,12 +34,33 @@ PlayerGUI::~PlayerGUI() {}
 
 void PlayerGUI::resized()
 {
+    int buttonWidth = 80;
+    int buttonHeight = 40;
+    int spacing = 10;
+    int x = 20;
     int y = 20;
-    loadButton.setBounds(20, y, 100, 40);
-    restartButton.setBounds(140, y, 80, 40);
-    stopButton.setBounds(240, y, 80, 40);
-    volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
+
+    loadButton.setBounds(x, y, 100, buttonHeight);
+    x += 100 + spacing;
+
+    playPauseButton.setBounds(x, y, buttonWidth, buttonHeight);
+    x += buttonWidth + spacing;
+
+    restartButton.setBounds(x, y, buttonWidth, buttonHeight);
+    x += buttonWidth + spacing;
+
+    stopButton.setBounds(x, y, buttonWidth, buttonHeight);
+    x += buttonWidth + spacing;
+
+    startButton.setBounds(x, y, buttonWidth, buttonHeight);
+    x += buttonWidth + spacing;
+
+    endButton.setBounds(x, y, buttonWidth, buttonHeight);
+
+    // Volume slider below buttons
+    volumeSlider.setBounds(20, y + buttonHeight + 40, getWidth() - 40, 30);
 }
+
 
 void PlayerGUI::buttonClicked(juce::Button* button)
 {
@@ -90,7 +111,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
 {
     if (slider == &volumeSlider)
-        playerAudio.setGain((float)slider->getValue());
+        playerAudio.setGain((float)slider->getValue() / 100.0f);
 }
 
 void PlayerGUI::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
