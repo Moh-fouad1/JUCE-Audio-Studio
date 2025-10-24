@@ -33,7 +33,9 @@ private:
 	juce::TextButton EndButton{ "End" };
     juce::TextButton loopButton{ "loop" };
     bool isLooping = false;
-    
+
+    juce::TextButton muteButton{ "Mute" };
+    bool Mute = false;
     
     //adjustable volume slider
     juce::Slider volumeSlider;  

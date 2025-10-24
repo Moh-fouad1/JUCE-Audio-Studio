@@ -3,7 +3,7 @@
 PlayerGUI::PlayerGUI()
 {
     // Buttons
-    for (auto* btn : { &loadButton, &playPauseButton, &restartButton, &stopButton, &StartButton, &EndButton, &loopButton })
+    for (auto* btn : { &loadButton, &playPauseButton, &restartButton, &stopButton, &StartButton, &EndButton, &loopButton, &muteButton})
     {
         addAndMakeVisible(*btn);
         btn->addListener(this);
@@ -40,6 +40,7 @@ void PlayerGUI::resized()
     place(StartButton);
     place(EndButton);
     place(loopButton);
+	place(muteButton);
 
     // Volume slider below buttons
     volumeSlider.setBounds(20, y + buttonHeight + 40, getWidth() - 40, 30);
@@ -48,7 +49,7 @@ void PlayerGUI::resized()
 
 void PlayerGUI::buttonClicked(juce::Button* button)
 {
-    
+	float lastVolume = (float)volumeSlider.getValue() / 100.0f; 
 
     if (button == &loadButton)
     {
@@ -108,7 +109,22 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         playerAudio.setLooping(isLooping);
         loopButton.setButtonText(isLooping ? "unloop" : "loop");
     }
-}
+    else if (button == &muteButton)
+    {
+        if (!Mute) {
+            lastVolume = volumeSlider.getValue();
+            playerAudio.setGain(0.0);
+            Mute = true;
+            muteButton.setButtonText("Unmute");
+        }
+        else if (Mute) {
+            playerAudio.setGain(lastVolume);
+            Mute = false;
+            muteButton.setButtonText("Mute");
+        }
+
+    }
+}   
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
 {
