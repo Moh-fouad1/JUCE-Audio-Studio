@@ -17,6 +17,7 @@ public:
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate);
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill);
     void releaseResources();
+	
 
 private:
     PlayerAudio playerAudio;
@@ -25,16 +26,19 @@ private:
     juce::TextButton loadButton{ "Load" };
     juce::TextButton restartButton{ "Restart" };
     juce::TextButton stopButton{ "Stop" };
-
+    
     //new buttons 
-    juce::TextButton playButton{ "Play" };
-    juce::TextButton pauseButton{ "⏸" };
-    juce::TextButton StartButton{ "|◄" };
-    juce::TextButton EndButton{ "►|" };
 
     juce::TextButton muteButton{ "Mute" };
     bool Mute = false;
 
+    juce::TextButton playPauseButton{ "Play" };
+	  juce::TextButton StartButton{ "Start" };
+	  juce::TextButton EndButton{ "End" };
+    juce::TextButton loopButton{ "loop" };
+    bool isLooping = false;
+    
+    
     //adjustable volume slider
     juce::Slider volumeSlider;
 
