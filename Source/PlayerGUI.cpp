@@ -13,6 +13,25 @@ PlayerGUI::PlayerGUI()
     volumeSlider.setRange(1, 100, 1);
     volumeSlider.setValue(50);
     volumeSlider.addListener(this);
+    addAndMakeVisible(loadButton);
+    addAndMakeVisible(restartButton);
+    addAndMakeVisible(stopButton);
+    addAndMakeVisible(playButton);
+    addAndMakeVisible(pauseButton);
+    addAndMakeVisible(StartButton);
+    addAndMakeVisible(EndButton);
+    addAndMakeVisible(volumeSlider);
+    addAndMakeVisible(muteButton);
+
+    loadButton.addListener(this);
+    restartButton.addListener(this);
+    stopButton.addListener(this);
+    playButton.addListener(this);
+    pauseButton.addListener(this);
+    StartButton.addListener(this);
+    EndButton.addListener(this);
+    volumeSlider.addListener(this);
+    muteButton.addListener(this);
     addAndMakeVisible(volumeSlider);
 }
 
@@ -26,6 +45,12 @@ void PlayerGUI::resized()
     int spacing = 10;
     int x = 20;
     int y = 20;
+    loadButton.setBounds(20, y, 100, 40);
+    restartButton.setBounds(240, y, 80, 40);
+    stopButton.setBounds(340, y, 80, 40);
+    volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
+    playButton.setBounds(140, y, 80, 40);
+    muteButton.setBounds(440, y, 80, 40);
 
     auto place = [&](juce::Button& btn)
         {
@@ -48,6 +73,7 @@ void PlayerGUI::resized()
 
 void PlayerGUI::buttonClicked(juce::Button* button)
 {
+    float lastVolume = volumeSlider.getValue();
     
 
     if (button == &loadButton)
@@ -72,10 +98,15 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     else if (button == &stopButton)
     {
         playerAudio.stop();
-		playerAudio.setPosition(0.0);
+        playerAudio.setPosition(0.0);
     }
     else if (button == &playPauseButton)
     {
+        playerAudio.play();
+    }
+    else if (button == &pauseButton)
+    {
+        playerAudio.stop(); // wont reset position, just pauses
         auto& transport = playerAudio.getTransportSource();
 
         if (transport.isPlaying())
@@ -102,6 +133,19 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         if (length > 0.0)
             playerAudio.setPosition(length);
     }
+    else if (button == &muteButton)
+    {
+        if (!Mute) {
+            playerAudio.setGain(0.0);
+            Mute = true;
+            muteButton.setButtonText("Unmute");
+        }
+        else if (Mute) {
+            playerAudio.setGain(lastVolume);
+            Mute = false;
+            muteButton.setButtonText("Mute");
+        }
+
     else if (button == &loopButton)
     {
         isLooping = !isLooping;
