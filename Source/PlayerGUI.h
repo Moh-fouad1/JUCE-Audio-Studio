@@ -4,19 +4,25 @@
 
 class PlayerGUI : public juce::Component,
     public juce::Button::Listener,
-    public juce::Slider::Listener
+    public juce::Slider::Listener,
+    public juce::Timer
 {
+
 public:
     PlayerGUI();
     ~PlayerGUI() override;
 
     void resized() override;
+    void timerCallback() override;
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
+
+
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate);
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill);
     void releaseResources();
+
 
 private:
     PlayerAudio playerAudio;
@@ -27,16 +33,26 @@ private:
     juce::TextButton stopButton{ "Stop" };
 
     //new buttons 
-	juce::TextButton playButton{ "►" };
-	juce::TextButton pauseButton{ "⏸" };
-	juce::TextButton StartButton{ "|◄" };
-	juce::TextButton EndButton{ "►|" };
+    juce::TextButton playButton{ "►" };
+    juce::TextButton pauseButton{ "⏸" };
+    juce::TextButton StartButton{ "|◄" };
+    juce::TextButton EndButton{ "►|" };
     juce::TextButton loopButton{ "loop" };
     bool isLooping = false;
-    
-    
+
+    juce::Slider positionSlider;
+    juce::Label timeLabel;
+
+    double markerA = -1.0;
+    double markerB = -1.0;
+    juce::TextButton setAButton{ "Set A" };
+    juce::TextButton setBButton{ "Set B" };
+    juce::TextButton clearABButton{ "Clear A-B" };
+
+
+
     //adjustable volume slider
-    juce::Slider volumeSlider;  
+    juce::Slider volumeSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };
