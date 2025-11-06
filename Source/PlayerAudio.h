@@ -21,6 +21,7 @@ public:
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate);
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill);
+
     void releaseResources();
 
     void play();
@@ -28,6 +29,7 @@ public:
     void setGain(float gain);
     void setPosition(double pos);
     void setLooping(bool shouldLoop);
+    double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
 
 	double getLengthInSeconds() const;
     AudioMetadata getMetadata() const { return metadata; }

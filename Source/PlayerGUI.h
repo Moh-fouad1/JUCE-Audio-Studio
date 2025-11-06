@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <JuceHeader.h>
 #include "PlayerAudio.h"
 
@@ -8,15 +8,19 @@ class PlayerGUI : public juce::Component,
     public juce::Timer,
     public juce::ListBoxModel
 {
+
 public:
     PlayerGUI();
     ~PlayerGUI() override;
 
     void paint(juce::Graphics& g) override;
     void resized() override;
+    void timerCallback() override;
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
     void timerCallback() override;
+
+
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate);
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill);
@@ -26,6 +30,7 @@ public:
     int getNumRows() override;
     void paintListBoxItem(int rowNumber, juce::Graphics& g, int width, int height, bool rowIsSelected) override;
     void listBoxItemClicked(int row, const juce::MouseEvent&) override;
+
 
 private:
     struct PlaylistItem
@@ -69,6 +74,17 @@ private:
     bool isShuffling = false;
     juce::Array<int> shuffledIndices;
     float lastVolumeBeforeMute = 0.5f;
+
+    double markerA = -1.0;
+    double markerB = -1.0;
+    juce::TextButton setAButton{ "Set A" };
+    juce::TextButton setBButton{ "Set B" };
+    juce::TextButton clearABButton{ "Clear A-B" };
+
+
+
+    //adjustable volume slider
+    juce::Slider volumeSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };
