@@ -15,3 +15,13 @@ JuceLibraryCode/
 # OS junk
 Thumbs.db
 .DS_Store
+
+# Visual Studio build outputs
+x64/
+Debug/
+Release/
+*.tlog
+*.lastbuildstate
+*.ilk
+*.res
+*.recipe

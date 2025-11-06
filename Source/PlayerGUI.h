@@ -18,7 +18,7 @@ public:
     void timerCallback() override;
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
-    void timerCallback() override;
+    
 
 
 
@@ -81,10 +81,7 @@ private:
     juce::TextButton setBButton{ "Set B" };
     juce::TextButton clearABButton{ "Clear A-B" };
 
-
-
-    //adjustable volume slider
-    juce::Slider volumeSlider;
+    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };

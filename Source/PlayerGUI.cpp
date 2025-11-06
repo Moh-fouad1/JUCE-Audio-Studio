@@ -38,6 +38,14 @@ PlayerGUI::PlayerGUI()
     loopToggle.addListener(this);
     muteToggle.addListener(this);
     
+    // A-B loop controls
+    addAndMakeVisible(setAButton);
+    addAndMakeVisible(setBButton);
+    addAndMakeVisible(clearABButton);
+    setAButton.addListener(this);
+    setBButton.addListener(this);
+    clearABButton.addListener(this);
+    
     loadButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff333333));
     loadButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
     clearButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff333333));
@@ -160,6 +168,14 @@ void PlayerGUI::resized()
     y = togglesRow.getY();
     place(loopToggle, 80);
     place(muteToggle, 80);
+
+    // A-B controls row
+    auto abRow = area.removeFromTop(35).reduced(20, 0);
+    setAButton.setBounds(abRow.removeFromLeft(90));
+    abRow.removeFromLeft(10);
+    setBButton.setBounds(abRow.removeFromLeft(90));
+    abRow.removeFromLeft(10);
+    clearABButton.setBounds(abRow.removeFromLeft(120));
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -333,6 +349,19 @@ void PlayerGUI::buttonClicked(juce::Button* button)
             playerAudio.setGain(lastVolumeBeforeMute);
         }
     }
+    else if (button == &setAButton)
+    {
+        markerA = playerAudio.getCurrentPosition();
+    }
+    else if (button == &setBButton)
+    {
+        markerB = playerAudio.getCurrentPosition();
+    }
+    else if (button == &clearABButton)
+    {
+        markerA = -1.0;
+        markerB = -1.0;
+    }
 }   
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
@@ -377,6 +406,15 @@ void PlayerGUI::timerCallback()
             playPauseButton.setButtonText("Play");
         }
         
+        // A-B looping
+        if (markerA >= 0.0 && markerB > markerA)
+        {
+            if (currentPos >= markerB)
+            {
+                transport.setPosition(markerA);
+            }
+        }
+
         // Auto-next track
         if (!transport.isPlaying() && currentPos >= duration - 0.1 && playlist.size() > 0)
         {
