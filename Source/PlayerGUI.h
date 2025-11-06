@@ -37,25 +37,23 @@ private:
     void loadPlaylistFile(int index);
     void updateMetadataDisplay();
     juce::String formatTime(double seconds);
-    std::unique_ptr<juce::Drawable> createSVGIcon(const char* iconType);
     
     PlayerAudio playerAudio;
     std::unique_ptr<juce::FileChooser> fileChooser;
 
-    // Modern UI Components with SVG icons
-    juce::DrawableButton playPauseButton{"", juce::DrawableButton::ImageFitted};
-    std::unique_ptr<juce::Drawable> playIcon;
-    std::unique_ptr<juce::Drawable> pauseIcon;
-    
-    juce::DrawableButton prevButton{"", juce::DrawableButton::ImageFitted};
-    juce::DrawableButton nextButton{"", juce::DrawableButton::ImageFitted};
-    juce::DrawableButton shuffleButton{"", juce::DrawableButton::ImageFitted};
+    // Simple text buttons
+    juce::TextButton playPauseButton{ "Play" };
+    juce::TextButton prevButton{ "Prev" };
+    juce::TextButton nextButton{ "Next" };
+    juce::TextButton shuffleButton{ "Shuffle" };
     
     juce::Slider seekSlider{juce::Slider::LinearHorizontal, juce::Slider::NoTextBox};
     juce::Slider volumeSlider{juce::Slider::LinearHorizontal, juce::Slider::TextBoxRight};
     
     juce::TextButton loadButton{ "Load Files" };
     juce::TextButton clearButton{ "Clear" };
+    juce::ToggleButton loopToggle{ "Loop" };
+    juce::ToggleButton muteToggle{ "Mute" };
     
     juce::Label timeLabel;
     juce::Label durationLabel;
@@ -70,6 +68,7 @@ private:
     
     bool isShuffling = false;
     juce::Array<int> shuffledIndices;
+    float lastVolumeBeforeMute = 0.5f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
 };

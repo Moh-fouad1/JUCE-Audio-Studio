@@ -9,15 +9,7 @@ PlayerGUI::PlayerGUI()
     playlistBox.setColour(juce::ListBox::ColourIds::outlineColourId, juce::Colour(0xff2a2a2a));
     addAndMakeVisible(playlistBox);
     
-    // Create SVG icons
-    playIcon = createSVGIcon("M8 5v14l11-7z");
-    pauseIcon = createSVGIcon("M6 4h4v16H6zm8 0h4v16h-4z");
-    
-    auto prevIcon = createSVGIcon("M6 6h2v12H6zm3.5 6l8.5 6V6z");
-    auto nextIcon = createSVGIcon("M15 6l-8.5 6 8.5 6V6zm3 0v12h-2V6h2z");
-    auto shuffleIcon = createSVGIcon("M14.83 13.83l1.68-1.68-2.12-2.12-1.68 1.68zM10.59 8.41l4.24-4.24 2.12 2.12-4.24 4.24zM13.17 6.83l-1.68-1.68L14.49 4h-6V2h6l2.83 2.83L16.07 5v11l-2.83-2.83z");
-    
-    // Setup buttons with icons
+    // Setup text buttons
     addAndMakeVisible(loadButton);
     addAndMakeVisible(clearButton);
     loadButton.addListener(this);
@@ -25,20 +17,26 @@ PlayerGUI::PlayerGUI()
     
     addAndMakeVisible(playPauseButton);
     playPauseButton.addListener(this);
-    playPauseButton.setImages(playIcon.get());
-    playPauseButton.setColour(juce::DrawableButton::backgroundColourId, juce::Colour(0xff1db954));
-    playPauseButton.setColour(juce::DrawableButton::backgroundOnColourId, juce::Colour(0xff1db954));
+    playPauseButton.setButtonText("Play");
+    playPauseButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff1db954));
+    playPauseButton.setColour(juce::TextButton::textColourOffId, juce::Colours::black);
     
     addAndMakeVisible(prevButton);
     addAndMakeVisible(nextButton);
     prevButton.addListener(this);
     nextButton.addListener(this);
-    prevButton.setImages(prevIcon.get());
-    nextButton.setImages(nextIcon.get());
+    prevButton.setButtonText("Prev");
+    nextButton.setButtonText("Next");
     
     addAndMakeVisible(shuffleButton);
     shuffleButton.addListener(this);
-    shuffleButton.setImages(shuffleIcon.get());
+    shuffleButton.setButtonText("Shuffle");
+    
+    // Loop and Mute toggles
+    addAndMakeVisible(loopToggle);
+    addAndMakeVisible(muteToggle);
+    loopToggle.addListener(this);
+    muteToggle.addListener(this);
     
     loadButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff333333));
     loadButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
@@ -125,8 +123,8 @@ void PlayerGUI::resized()
     playlistBox.setBounds(playlistSection);
     
     // Bottom section: Player controls
-    area.reduce(40, 10);
-    
+    area.reduce(20, 10);
+
     // Seek slider with time labels
     auto seekArea = area.removeFromTop(40);
     timeLabel.setBounds(seekArea.removeFromLeft(50));
@@ -134,20 +132,34 @@ void PlayerGUI::resized()
     durationLabel.setBounds(seekArea.removeFromRight(50));
     seekArea.removeFromLeft(10).removeFromRight(10);
     seekSlider.setBounds(seekArea);
-    
-    // Player buttons
-    auto buttonArea = area.removeFromTop(60).reduced(20, 0);
-    int buttonSize = 50;
-    int spacing = 60;
-    
-    prevButton.setBounds(buttonArea.getX(), buttonArea.getY() + 5, 40, 40);
-    playPauseButton.setBounds(buttonArea.getX() + spacing, buttonArea.getY(), buttonSize, buttonSize);
-    nextButton.setBounds(buttonArea.getX() + spacing * 2, buttonArea.getY() + 5, 40, 40);
-    shuffleButton.setBounds(buttonArea.getX() + spacing * 3, buttonArea.getY() + 10, 30, 30);
-    
-    // Volume control on the right
-    auto volumeArea = buttonArea.removeFromRight(200);
-    volumeSlider.setBounds(volumeArea);
+
+    // Button row with simple incremental placement (original style)
+    auto buttonRow = area.removeFromTop(60).reduced(20, 0);
+    int x = buttonRow.getX();
+    int y = buttonRow.getY() + 10;
+    const int buttonW = 80;
+    const int buttonH = 40;
+    const int spacing = 10;
+
+    auto place = [&](juce::Button& b, int w) {
+        b.setBounds(x, y, w, buttonH);
+        x += w + spacing;
+    };
+
+    place(prevButton, 70);
+    place(playPauseButton, 90);
+    place(nextButton, 70);
+    place(shuffleButton, 90);
+
+    // Volume slider on the right with fixed width
+    volumeSlider.setBounds(buttonRow.getRight() - 220, buttonRow.getY() + 5, 200, buttonH);
+
+    // Toggles row under buttons using the same placer
+    auto togglesRow = area.removeFromTop(30).reduced(20, 0);
+    x = togglesRow.getX();
+    y = togglesRow.getY();
+    place(loopToggle, 80);
+    place(muteToggle, 80);
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -228,7 +240,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
             }
             loadPlaylistFile(currentTrackIndex);
             transport.start();
-            playPauseButton.setImages(pauseIcon.get());
+            playPauseButton.setButtonText("Pause");
         }
     }
     else if (button == &nextButton)
@@ -256,7 +268,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
             }
             loadPlaylistFile(currentTrackIndex);
             transport.start();
-            playPauseButton.setImages(pauseIcon.get());
+            playPauseButton.setButtonText("Pause");
         }
     }
     else if (button == &playPauseButton)
@@ -268,12 +280,12 @@ void PlayerGUI::buttonClicked(juce::Button* button)
             double currentPos = transport.getCurrentPosition();
             transport.stop();
             transport.setPosition(currentPos);
-            playPauseButton.setImages(playIcon.get());
+            playPauseButton.setButtonText("Play");
         }
         else
         {
             transport.start();                   
-            playPauseButton.setImages(pauseIcon.get());
+            playPauseButton.setButtonText("Pause");
         }
     }
     else if (button == &shuffleButton)
@@ -296,11 +308,29 @@ void PlayerGUI::buttonClicked(juce::Button* button)
             }
             
             // Visual feedback
-            shuffleButton.setColour(juce::DrawableButton::backgroundColourId, juce::Colour(0xff1db954));
+            shuffleButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff1db954));
         }
         else
         {
-            shuffleButton.setColour(juce::DrawableButton::backgroundColourId, juce::Colour());
+            shuffleButton.setColour(juce::TextButton::buttonColourId, juce::Colour());
+        }
+    }
+    else if (button == &loopToggle)
+    {
+        bool shouldLoop = loopToggle.getToggleState();
+        playerAudio.setLooping(shouldLoop);
+    }
+    else if (button == &muteToggle)
+    {
+        bool shouldMute = muteToggle.getToggleState();
+        if (shouldMute)
+        {
+            lastVolumeBeforeMute = (float) volumeSlider.getValue() / 100.0f;
+            playerAudio.setGain(0.0f);
+        }
+        else
+        {
+            playerAudio.setGain(lastVolumeBeforeMute);
         }
     }
 }   
@@ -340,11 +370,11 @@ void PlayerGUI::timerCallback()
         // Update button state
         if (transport.isPlaying())
         {
-            playPauseButton.setImages(pauseIcon.get());
+            playPauseButton.setButtonText("Pause");
         }
         else
         {
-            playPauseButton.setImages(playIcon.get());
+            playPauseButton.setButtonText("Play");
         }
         
         // Auto-next track
@@ -456,7 +486,7 @@ void PlayerGUI::listBoxItemClicked(int row, const juce::MouseEvent&)
         
         auto& transport = playerAudio.getTransportSource();
         transport.start();
-        playPauseButton.setImages(pauseIcon.get());
+        playPauseButton.setButtonText("Pause");
     }
 }
 
@@ -506,55 +536,4 @@ juce::String PlayerGUI::formatTime(double seconds)
     return juce::String(mins) + ":" + (secs < 10 ? "0" : "") + juce::String(secs);
 }
 
-std::unique_ptr<juce::Drawable> PlayerGUI::createSVGIcon(const char* iconType)
-{
-    auto drawable = std::make_unique<juce::DrawablePath>();
-    juce::Path path;
-    
-    // Create simple geometric icons
-    juce::String type = juce::String::fromUTF8(iconType);
-    
-    if (type == "M8 5v14l11-7z") // Play icon
-    {
-        path.startNewSubPath(8, 5);
-        path.lineTo(19, 12);
-        path.lineTo(8, 19);
-        path.closeSubPath();
-    }
-    else if (type == "M6 4h4v16H6zm8 0h4v16h-4z") // Pause icon
-    {
-        path.addRectangle(6, 4, 4, 16);
-        path.addRectangle(14, 4, 4, 16);
-    }
-    else if (type == "M6 6h2v12H6zm3.5 6l8.5 6V6z") // Previous icon
-    {
-        path.addRectangle(6, 6, 2, 12);
-        path.startNewSubPath(9.5f, 6);
-        path.lineTo(9.5f, 18);
-        path.lineTo(18, 12);
-        path.closeSubPath();
-    }
-    else if (type == "M15 6l-8.5 6 8.5 6V6zm3 0v12h-2V6h2z") // Next icon
-    {
-        path.startNewSubPath(6.5f, 6);
-        path.lineTo(15, 12);
-        path.lineTo(6.5f, 18);
-        path.closeSubPath();
-        path.addRectangle(18, 6, 2, 12);
-    }
-    else if (type == "M14.83 13.83l1.68-1.68-2.12-2.12-1.68 1.68zM10.59 8.41l4.24-4.24 2.12 2.12-4.24 4.24zM13.17 6.83l-1.68-1.68L14.49 4h-6V2h6l2.83 2.83L16.07 5v11l-2.83-2.83z") // Shuffle icon
-    {
-        // Simplified shuffle icon - two arrows crossing
-        path.startNewSubPath(10, 8);
-        path.lineTo(14, 12);
-        path.lineTo(10, 16);
-        path.startNewSubPath(14, 8);
-        path.lineTo(10, 12);
-        path.lineTo(14, 16);
-    }
-    
-    drawable->setPath(path);
-    drawable->setFill(juce::Colours::white);
-    
-    return drawable;
-}
+// No icon creation needed for text buttons
