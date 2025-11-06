@@ -65,9 +65,8 @@ PlayerGUI::PlayerGUI()
     addAndMakeVisible(pauseButton);
     addAndMakeVisible(StartButton);
     addAndMakeVisible(EndButton);
-    volumeSlider.setColour(juce::Slider::trackColourId, juce::Colour(0xff404040));
-    volumeSlider.setColour(juce::Slider::thumbColourId, juce::Colours::white);
-    volumeSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::lightgrey);
+    addAndMakeVisible(loopButton);
+    loopButton.addListener(this);
     addAndMakeVisible(volumeSlider);
     
     // Time labels
@@ -100,13 +99,23 @@ PlayerGUI::PlayerGUI()
     StartButton.addListener(this);
     EndButton.addListener(this);
     volumeSlider.addListener(this);
-    muteButton.addListener(this);
-    addAndMakeVisible(volumeSlider);
-}
 
-PlayerGUI::~PlayerGUI() 
-{
-    stopTimer();
+    positionSlider.setRange(0.0, 1.0);
+    positionSlider.addListener(this);
+    addAndMakeVisible(positionSlider);
+    addAndMakeVisible(timeLabel);
+
+    addAndMakeVisible(setAButton);
+    addAndMakeVisible(setBButton);
+    addAndMakeVisible(clearABButton);
+
+    setAButton.addListener(this);
+    setBButton.addListener(this);
+    clearABButton.addListener(this);
+
+    startTimerHz(30);
+
+
 }
 
 void PlayerGUI::paint(juce::Graphics& g)
@@ -131,76 +140,13 @@ void PlayerGUI::resized()
     restartButton.setBounds(240, y, 80, 40);
     stopButton.setBounds(340, y, 80, 40);
     volumeSlider.setBounds(20, 100, getWidth() - 40, 30);
-    playButton.setBounds(140, y, 80, 40);
-    muteButton.setBounds(440, y, 80, 40);
+    positionSlider.setBounds(20, 150, getWidth() - 40, 30);
+    timeLabel.setBounds(20, 185, 200, 25);
 
-    auto place = [&](juce::Button& btn)
-        {
-            btn.setBounds(x, y, buttonWidth, buttonHeight);
-            x += buttonWidth + spacing;
-        };
+    setAButton.setBounds(20, 220, 90, 35);
+    setBButton.setBounds(120, 220, 90, 35);
+    clearABButton.setBounds(220, 220, 120, 35);
 
-    place(loadButton);
-    place(playPauseButton);
-    place(restartButton);
-    place(stopButton);
-    place(StartButton);
-    place(EndButton);
-    place(loopButton);
-
-    // Volume slider below buttons
-    volumeSlider.setBounds(20, y + buttonHeight + 40, getWidth() - 40, 30);
-}
-
-
-void PlayerGUI::buttonClicked(juce::Button* button)
-{
-    float lastVolume = volumeSlider.getValue();
-    auto area = getLocalBounds();
-    
-    // Top section: Metadata and controls
-    auto topSection = area.removeFromTop(150);
-    
-    // Metadata display
-    auto metadataArea = topSection.removeFromTop(40).reduced(20, 5);
-    metadataDisplay.setBounds(metadataArea);
-    
-    // Top controls
-    auto controlsArea = topSection.reduced(20, 10);
-    
-    loadButton.setBounds(controlsArea.removeFromLeft(100));
-    controlsArea.removeFromLeft(10);
-    clearButton.setBounds(controlsArea.removeFromLeft(100));
-    
-    // Playlist section (middle)
-    auto playlistSection = area.removeFromTop(270);
-    playlistSection.reduce(20, 0);
-    playlistBox.setBounds(playlistSection);
-    
-    // Bottom section: Player controls
-    area.reduce(40, 10);
-    
-    // Seek slider with time labels
-    auto seekArea = area.removeFromTop(40);
-    timeLabel.setBounds(seekArea.removeFromLeft(50));
-    seekArea.removeFromLeft(10);
-    durationLabel.setBounds(seekArea.removeFromRight(50));
-    seekArea.removeFromLeft(10).removeFromRight(10);
-    seekSlider.setBounds(seekArea);
-    
-    // Player buttons
-    auto buttonArea = area.removeFromTop(60).reduced(20, 0);
-    int buttonSize = 50;
-    int spacing = 60;
-    
-    prevButton.setBounds(buttonArea.getX(), buttonArea.getY() + 5, 40, 40);
-    playPauseButton.setBounds(buttonArea.getX() + spacing, buttonArea.getY(), buttonSize, buttonSize);
-    nextButton.setBounds(buttonArea.getX() + spacing * 2, buttonArea.getY() + 5, 40, 40);
-    shuffleButton.setBounds(buttonArea.getX() + spacing * 3, buttonArea.getY() + 10, 30, 30);
-    
-    // Volume control on the right
-    auto volumeArea = buttonArea.removeFromRight(200);
-    volumeSlider.setBounds(volumeArea);
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -322,50 +268,6 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     else if (button == &pauseButton)
     {
         playerAudio.stop(); // wont reset position, just pauses
-        auto& transport = playerAudio.getTransportSource();
-
-        if (transport.isPlaying())
-        {
-            double currentPos = transport.getCurrentPosition();
-            transport.stop();
-            transport.setPosition(currentPos);
-            playPauseButton.setImages(playIcon.get());
-        }
-        else
-        {
-            transport.start();                   
-            playPauseButton.setImages(pauseIcon.get());
-        }
-    }
-    else if (button == &shuffleButton)
-    {
-        isShuffling = !isShuffling;
-        if (isShuffling)
-        {
-            shuffledIndices.clear();
-            for (int i = 0; i < playlist.size(); ++i)
-                shuffledIndices.add(i);
-            
-            // Shuffle using Fisher-Yates algorithm
-            for (int i = shuffledIndices.size() - 1; i > 0; --i)
-            {
-                int j = rand() % (i + 1);
-                // Manual swap for juce::Array
-                int temp = shuffledIndices[i];
-                shuffledIndices.set(i, shuffledIndices[j]);
-                shuffledIndices.set(j, temp);
-            }
-            
-            // Visual feedback
-            shuffleButton.setColour(juce::DrawableButton::backgroundColourId, juce::Colour(0xff1db954));
-        }
-        else
-        {
-            shuffleButton.setColour(juce::DrawableButton::backgroundColourId, juce::Colour());
-        }
-            playPauseButton.setButtonText("Pause");
-        }
-
     }
     else if (button == &StartButton)
     {
@@ -396,76 +298,53 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         playerAudio.setLooping(isLooping);
         loopButton.setButtonText(isLooping ? "unloop" : "loop");
     }
-}   
+    else if (button == &setAButton)
+    {
+        markerA = playerAudio.getCurrentPosition();
+    }
+    else if (button == &setBButton)
+    {
+        markerB = playerAudio.getCurrentPosition();
+    }
+    else if (button == &clearABButton)
+    {
+        markerA = markerB = -1.0;
+    }
+
+}
+void PlayerGUI::timerCallback()
+{
+    double current = playerAudio.getCurrentPosition();
+    double length = playerAudio.getLengthInSeconds();
+
+    if (length > 0.0)
+    {
+        positionSlider.setValue(current / length, juce::dontSendNotification);
+
+        int sec = (int)current % 60;
+        int min = (int)(current / 60);
+        timeLabel.setText(juce::String(min) + ":" + juce::String(sec).paddedLeft('0', 2),
+            juce::dontSendNotification);
+    }
+
+    if (markerA >= 0 && markerB > markerA)
+    {
+        if (current >= markerB)
+            playerAudio.setPosition(markerA);
+    }
+}
+
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
 {
     if (slider == &volumeSlider)
+        playerAudio.setGain((float)slider->getValue());
+    else if (slider == &positionSlider)
     {
-        playerAudio.setGain((float)slider->getValue() / 100.0f);
+        double len = playerAudio.getLengthInSeconds();
+        playerAudio.setPosition(len * positionSlider.getValue());
     }
-    else if (slider == &seekSlider)
-    {
-        auto& transport = playerAudio.getTransportSource();
-        if (transport.getLengthInSeconds() > 0)
-        {
-            double newPos = slider->getValue() * transport.getLengthInSeconds();
-            transport.setPosition(newPos);
-        }
-    }
-}
 
-void PlayerGUI::timerCallback()
-{
-    auto& transport = playerAudio.getTransportSource();
-    
-    if (transport.getLengthInSeconds() > 0)
-    {
-        double currentPos = transport.getCurrentPosition();
-        double duration = transport.getLengthInSeconds();
-        
-        timeLabel.setText(formatTime(currentPos), juce::dontSendNotification);
-        durationLabel.setText(formatTime(duration), juce::dontSendNotification);
-        
-        // Update seek slider
-        seekSlider.setValue(currentPos / duration, juce::dontSendNotification);
-        
-        // Update button state
-        if (transport.isPlaying())
-        {
-            playPauseButton.setImages(pauseIcon.get());
-        }
-        else
-        {
-            playPauseButton.setImages(playIcon.get());
-        }
-        
-        // Auto-next track
-        if (!transport.isPlaying() && currentPos >= duration - 0.1 && playlist.size() > 0)
-        {
-            // Move to next track
-            if (isShuffling && shuffledIndices.size() > 0)
-            {
-                int shuffleIndex = 0;
-                for (int i = 0; i < shuffledIndices.size(); ++i)
-                {
-                    if (shuffledIndices[i] == currentTrackIndex)
-                    {
-                        shuffleIndex = i;
-                        break;
-                    }
-                }
-                shuffleIndex = (shuffleIndex + 1) % shuffledIndices.size();
-                currentTrackIndex = shuffledIndices[shuffleIndex];
-            }
-            else
-            {
-                currentTrackIndex = (currentTrackIndex + 1) % playlist.size();
-            }
-            loadPlaylistFile(currentTrackIndex);
-            transport.start();
-        }
-    }
 }
 
 void PlayerGUI::prepareToPlay(int samplesPerBlockExpected, double sampleRate)

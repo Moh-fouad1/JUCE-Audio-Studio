@@ -30,8 +30,8 @@ private:
                 DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar(true);
-            setContentOwned(new MainComponent(), true); 
-            centreWithSize(800, 600);
+            setContentOwned(new MainComponent(), true);
+            centreWithSize(600, 400);
             setVisible(true);
         }
 

@@ -8,15 +8,19 @@ class PlayerGUI : public juce::Component,
     public juce::Timer,
     public juce::ListBoxModel
 {
+
 public:
     PlayerGUI();
     ~PlayerGUI() override;
 
     void paint(juce::Graphics& g) override;
     void resized() override;
+    void timerCallback() override;
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
     void timerCallback() override;
+
+
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate);
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill);
@@ -26,6 +30,7 @@ public:
     int getNumRows() override;
     void paintListBoxItem(int rowNumber, juce::Graphics& g, int width, int height, bool rowIsSelected) override;
     void listBoxItemClicked(int row, const juce::MouseEvent&) override;
+
 
 private:
     struct PlaylistItem
@@ -52,34 +57,24 @@ private:
     juce::DrawableButton shuffleButton{"", juce::DrawableButton::ImageFitted};
     
     //new buttons 
-
-    juce::TextButton muteButton{ "Mute" };
-    bool Mute = false;
-
-    juce::TextButton playPauseButton{ "Play" };
-	  juce::TextButton StartButton{ "Start" };
-	  juce::TextButton EndButton{ "End" };
+    juce::TextButton playButton{ "►" };
+    juce::TextButton pauseButton{ "⏸" };
+    juce::TextButton StartButton{ "|◄" };
+    juce::TextButton EndButton{ "►|" };
     juce::TextButton loopButton{ "loop" };
     bool isLooping = false;
-    juce::Slider seekSlider{juce::Slider::LinearHorizontal, juce::Slider::NoTextBox};
-    juce::Slider volumeSlider{juce::Slider::LinearHorizontal, juce::Slider::TextBoxRight};
-    
-    juce::TextButton loadButton{ "Load Files" };
-    juce::TextButton clearButton{ "Clear" };
-    
+
+    juce::Slider positionSlider;
     juce::Label timeLabel;
-    juce::Label durationLabel;
-    
-    // Metadata display
-    juce::Label metadataDisplay;
-    
-    // Playlist
-    juce::ListBox playlistBox;
-    juce::Array<PlaylistItem> playlist;
-    int currentTrackIndex = -1;
-    
-    bool isShuffling = false;
-    juce::Array<int> shuffledIndices;
+
+    double markerA = -1.0;
+    double markerB = -1.0;
+    juce::TextButton setAButton{ "Set A" };
+    juce::TextButton setBButton{ "Set B" };
+    juce::TextButton clearABButton{ "Clear A-B" };
+
+
+
     //adjustable volume slider
     juce::Slider volumeSlider;
 
