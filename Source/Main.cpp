@@ -24,9 +24,9 @@ private:
     class MainWindow : public juce::DocumentWindow
     {
     public:
-        MainWindow(juce::String name)//test
+        MainWindow(juce::String name)
             : DocumentWindow(name,
-                juce::Colours::lightgrey,
+                juce::Colour(0xff0a0a0a),
                 DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar(true);
