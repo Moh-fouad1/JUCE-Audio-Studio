@@ -1,7 +1,8 @@
 ﻿#include "PlayerGUI.h"
 
 PlayerGUI::PlayerGUI()
-{
+    : waveformDisplay(playerAudio.getFormatManager()) 
+    {
     // Initialize playlist
     playlistBox.setModel(this);
     playlistBox.setColour(juce::ListBox::ColourIds::backgroundColourId, juce::Colour(0xff1a1a1a));
@@ -37,6 +38,19 @@ PlayerGUI::PlayerGUI()
     addAndMakeVisible(muteToggle);
     loopToggle.addListener(this);
     muteToggle.addListener(this);
+
+    // Wave form
+    addAndMakeVisible(waveformDisplay);
+
+    waveformDisplay.onPositionChange = [this](double newPosition)
+        {
+            auto& transport = playerAudio.getTransportSource();
+            if (transport.getLengthInSeconds() > 0)
+            {
+                double newPosInSeconds = newPosition * transport.getLengthInSeconds();
+                transport.setPosition(newPosInSeconds);
+            }
+        };
     
     // A-B loop controls
     addAndMakeVisible(setAButton);
@@ -142,12 +156,16 @@ void PlayerGUI::resized()
     clearButton.setBounds(controlsArea.removeFromLeft(100));
     
     // Playlist section (middle)
-    auto playlistSection = area.removeFromTop(270);
+    auto playlistSection = area.removeFromTop(200);
     playlistSection.reduce(20, 0);
     playlistBox.setBounds(playlistSection);
     
     // Bottom section: Player controls
     area.reduce(20, 10);
+
+    // waveform
+    auto waveformSection = area.removeFromTop(80).reduced(20, 10);
+    waveformDisplay.setBounds(waveformSection);
 
     // Seek slider with time labels
     auto seekArea = area.removeFromTop(40);
@@ -425,6 +443,9 @@ void PlayerGUI::timerCallback()
         // Update seek slider
         seekSlider.setValue(currentPos / duration, juce::dontSendNotification);
         
+        // Update waveform display
+        waveformDisplay.setPositionRelative(currentPos / duration);
+
         // Update button state
         if (transport.isPlaying())
         {
@@ -564,7 +585,8 @@ void PlayerGUI::loadPlaylistFile(int index)
         auto& item = playlist[index];
         if (playerAudio.loadFile(item.file))
         {
-            
+            waveformDisplay.loadURL(juce::URL(item.file));
+
             updateMetadataDisplay();
             playlistBox.selectRow(index);
         }

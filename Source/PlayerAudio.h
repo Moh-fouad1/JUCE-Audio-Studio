@@ -24,6 +24,10 @@ public:
 
     void releaseResources();
 
+    // for the waveform
+    juce::AudioFormatManager& getFormatManager() { return formatManager; }
+
+
     void play();
     void stop();
     void setGain(float gain);

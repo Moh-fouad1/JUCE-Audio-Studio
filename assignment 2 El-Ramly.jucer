@@ -4,6 +4,10 @@
               useAppConfig="0" addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="cCUm24" name="assignment 2 El-Ramly">
     <GROUP id="{9B866194-897F-1B86-6AD4-B31976B1745B}" name="Source">
+      <FILE id="DOJSx0" name="WaveformDisplay.cpp" compile="1" resource="0"
+            file="Source/WaveformDisplay.cpp"/>
+      <FILE id="PzwIGv" name="WaveformDisplay.h" compile="0" resource="0"
+            file="Source/WaveformDisplay.h"/>
       <FILE id="oAaKSU" name="PlayerGUI.h" compile="0" resource="0" file="Source/PlayerGUI.h"/>
       <FILE id="oJSuYT" name="PlayerGUI.cpp" compile="1" resource="0" file="Source/PlayerGUI.cpp"/>
       <FILE id="omjpy2" name="PlayerAudio.h" compile="0" resource="0" file="Source/PlayerAudio.h"/>

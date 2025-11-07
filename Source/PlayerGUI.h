@@ -1,5 +1,6 @@
-﻿#pragma once
+#pragma once
 #include <JuceHeader.h>
+#include "WaveformDisplay.h"
 #include "PlayerAudio.h"
 
 class PlayerGUI : public juce::Component,
@@ -58,6 +59,10 @@ private:
     // Speed slider
     juce::Slider speedSlider;
     juce::Label speedLabel;
+
+    // Wave form
+    WaveformDisplay waveformDisplay;
+
     
     juce::TextButton loadButton{ "Load Files" };
     juce::TextButton clearButton{ "Clear" };
