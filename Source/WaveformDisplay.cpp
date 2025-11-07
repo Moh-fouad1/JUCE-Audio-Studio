@@ -34,7 +34,7 @@ void WaveformDisplay::paint(juce::Graphics& g)
         if (audioLength > 0)
         {
             auto playedArea = getLocalBounds().withWidth((int)(getWidth() * position));
-            g.setColour(juce::Colour(0xff1db954)); // Spotify green
+            g.setColour(juce::Colour(0xff1db954)); 
             thumbnail.drawChannel(g, playedArea, 0.0, audioLength * position, 0, 1.0f);
         }
 

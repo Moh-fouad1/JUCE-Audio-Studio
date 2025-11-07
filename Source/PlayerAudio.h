@@ -30,7 +30,10 @@ public:
 
     void play();
     void stop();
-    void setGain(float gain);
+    void setUserGain(float gain);
+    void setExternalGain(float gain);
+    float getUserGain() const { return userGain; }
+    float getExternalGain() const { return externalGain; }
     void setPosition(double pos);
     void setLooping(bool shouldLoop);
     double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
@@ -43,17 +46,21 @@ public:
 
     bool isPlaying() const;
 
-    
-	juce::AudioTransportSource& getTransportSource() noexcept { return transportSource; }
+    juce::AudioTransportSource& getTransportSource() noexcept { return transportSource; }
+    juce::AudioSource* getAudioSource() noexcept { return resamplingSource.get(); }
 
 private:
     void extractMetadata(const juce::File& file);
+    void updateGain();
     
     double lastPosition = 0.0;
     AudioMetadata metadata;
 
     float playbackSpeed = 1.0f;
     std::unique_ptr<juce::ResamplingAudioSource> resamplingSource;
+
+    float userGain = 0.5f;
+    float externalGain = 1.0f;
 
     juce::AudioFormatManager formatManager;
     juce::AudioTransportSource transportSource;

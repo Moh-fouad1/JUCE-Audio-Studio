@@ -4,7 +4,7 @@ PlayerAudio::PlayerAudio()
 {
     formatManager.registerBasicFormats();
     resamplingSource = std::make_unique<juce::ResamplingAudioSource>(&transportSource, false, 2);
-
+    transportSource.setGain(userGain * externalGain);
 }
 
 PlayerAudio::~PlayerAudio() {}
@@ -100,9 +100,16 @@ void PlayerAudio::stop()
     transportSource.setPosition(0.0);
 }
 
-void PlayerAudio::setGain(float gain)
+void PlayerAudio::setUserGain(float gain)
 {
-    transportSource.setGain(gain);
+    userGain = juce::jlimit(0.0f, 1.0f, gain);
+    updateGain();
+}
+
+void PlayerAudio::setExternalGain(float gain)
+{
+    externalGain = juce::jlimit(0.0f, 1.0f, gain);
+    updateGain();
 }
 
 void PlayerAudio::setPosition(double pos)
@@ -142,4 +149,9 @@ void PlayerAudio::setPlaybackSpeed(float speed)
     {
         resamplingSource->setResamplingRatio(speed);
     }
+}
+
+void PlayerAudio::updateGain()
+{
+    transportSource.setGain(userGain * externalGain);
 }
