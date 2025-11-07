@@ -31,10 +31,14 @@ public:
     void setLooping(bool shouldLoop);
     double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
 
+    void setPlaybackSpeed(float speed);
+    float getPlaybackSpeed() const { return playbackSpeed; }
+
 	double getLengthInSeconds() const;
     AudioMetadata getMetadata() const { return metadata; }
 
     bool isPlaying() const;
+
     
 	juce::AudioTransportSource& getTransportSource() noexcept { return transportSource; }
 
@@ -43,6 +47,9 @@ private:
     
     double lastPosition = 0.0;
     AudioMetadata metadata;
+
+    float playbackSpeed = 1.0f;
+    std::unique_ptr<juce::ResamplingAudioSource> resamplingSource;
 
     juce::AudioFormatManager formatManager;
     juce::AudioTransportSource transportSource;

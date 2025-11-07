@@ -54,6 +54,10 @@ private:
     
     juce::Slider seekSlider{juce::Slider::LinearHorizontal, juce::Slider::NoTextBox};
     juce::Slider volumeSlider{juce::Slider::LinearHorizontal, juce::Slider::TextBoxRight};
+
+    // Speed slider
+    juce::Slider speedSlider;
+    juce::Label speedLabel;
     
     juce::TextButton loadButton{ "Load Files" };
     juce::TextButton clearButton{ "Clear" };

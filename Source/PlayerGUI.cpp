@@ -68,6 +68,22 @@ PlayerGUI::PlayerGUI()
     volumeSlider.setColour(juce::Slider::thumbColourId, juce::Colours::white);
     volumeSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::lightgrey);
     addAndMakeVisible(volumeSlider);
+
+    // Speed slider
+    speedSlider.setRange(0.5, 2.0, 0.1);
+    speedSlider.setValue(1.0);
+    speedSlider.setSkewFactor(0.5); // Makes the slider more sensitive at lower values
+    speedSlider.addListener(this);
+    speedSlider.setColour(juce::Slider::trackColourId, juce::Colour(0xff404040));
+    speedSlider.setColour(juce::Slider::thumbColourId, juce::Colour(0xffffa500)); // Orange color
+    speedSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::lightgrey);
+    speedSlider.setNumDecimalPlacesToDisplay(1);
+    addAndMakeVisible(speedSlider);
+
+    speedLabel.setText("Speed", juce::dontSendNotification);
+    speedLabel.setJustificationType(juce::Justification::centred);
+    speedLabel.setColour(juce::Label::textColourId, juce::Colours::lightgrey);
+    addAndMakeVisible(speedLabel);
     
     // Time labels
     timeLabel.setText("0:00", juce::dontSendNotification);
@@ -142,17 +158,17 @@ void PlayerGUI::resized()
     seekSlider.setBounds(seekArea);
 
     // Button row with simple incremental placement (original style)
-    auto buttonRow = area.removeFromTop(60).reduced(20, 0);
+    auto buttonRow = area.removeFromTop(50).reduced(20, 0);
     int x = buttonRow.getX();
-    int y = buttonRow.getY() + 10;
+    int y = buttonRow.getY();
     const int buttonW = 80;
-    const int buttonH = 40;
+    const int buttonH = 35;
     const int spacing = 10;
 
     auto place = [&](juce::Button& b, int w) {
         b.setBounds(x, y, w, buttonH);
         x += w + spacing;
-    };
+        };
 
     place(prevButton, 70);
     place(playPauseButton, 90);
@@ -160,22 +176,30 @@ void PlayerGUI::resized()
     place(shuffleButton, 90);
 
     // Volume slider on the right with fixed width
-    volumeSlider.setBounds(buttonRow.getRight() - 220, buttonRow.getY() + 5, 200, buttonH);
+    volumeSlider.setBounds(buttonRow.getRight() - 220, buttonRow.getY(), 200, buttonH);
 
-    // Toggles row under buttons using the same placer
-    auto togglesRow = area.removeFromTop(30).reduced(20, 0);
-    x = togglesRow.getX();
-    y = togglesRow.getY();
-    place(loopToggle, 80);
-    place(muteToggle, 80);
+    // Second row for toggles and speed
+    auto secondRow = area.removeFromTop(40).reduced(20, 0);
+    x = secondRow.getX();
+    y = secondRow.getY();
 
-    // A-B controls row
-    auto abRow = area.removeFromTop(35).reduced(20, 0);
-    setAButton.setBounds(abRow.removeFromLeft(90));
-    abRow.removeFromLeft(10);
-    setBButton.setBounds(abRow.removeFromLeft(90));
-    abRow.removeFromLeft(10);
-    clearABButton.setBounds(abRow.removeFromLeft(120));
+    // Toggle buttons
+    loopToggle.setBounds(x, y, 80, 30);
+    x += 80 + spacing;
+    muteToggle.setBounds(x, y, 80, 30);
+    x += 80 + spacing;
+
+    // A-B loop buttons
+    setAButton.setBounds(x, y, 60, 30);
+    x += 60 + 5;
+    setBButton.setBounds(x, y, 60, 30);
+    x += 60 + 5;
+    clearABButton.setBounds(x, y, 80, 30);
+    x += 80 + spacing;
+
+    // Speed slider on the right of second row
+    speedLabel.setBounds(secondRow.getRight() - 270, y, 50, 30);
+    speedSlider.setBounds(secondRow.getRight() - 220, y, 200, 30);
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -362,6 +386,7 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         markerA = -1.0;
         markerB = -1.0;
     }
+
 }   
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
@@ -378,6 +403,10 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
             double newPos = slider->getValue() * transport.getLengthInSeconds();
             transport.setPosition(newPos);
         }
+    }
+    else if (slider == &speedSlider)
+    {
+        playerAudio.setPlaybackSpeed((float)speedSlider.getValue());
     }
 }
 
@@ -535,6 +564,7 @@ void PlayerGUI::loadPlaylistFile(int index)
         auto& item = playlist[index];
         if (playerAudio.loadFile(item.file))
         {
+            
             updateMetadataDisplay();
             playlistBox.selectRow(index);
         }
