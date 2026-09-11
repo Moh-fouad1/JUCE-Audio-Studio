@@ -1,4 +1,4 @@
-# 🎵 Dual Audio Player
+#  Dual Audio Player
 
 A professional dual-channel audio player application built with the JUCE framework. This application features two independent audio players that can be mixed together, with advanced playback controls, waveform visualization, and session management.
 
@@ -6,7 +6,7 @@ A professional dual-channel audio player application built with the JUCE framewo
 ![JUCE](https://img.shields.io/badge/JUCE-Framework-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-## ✨ Features
+##  Features
 
 ### 🎛️ Dual Player System
 - **Two Independent Players**: Play different audio files simultaneously in separate channels
@@ -25,24 +25,24 @@ A professional dual-channel audio player application built with the JUCE framewo
   - Skip forward/backward by 10 seconds
   - Restart button
 
-### 📊 Visualization
+###  Visualization
 - **Waveform Display**: Real-time waveform visualization with playhead indicator
 - **Interactive Waveform**: Click on waveform to jump to any position
 - **Played Portion Highlighting**: Visual feedback showing played vs. remaining audio
 
-### 🎯 Advanced Features
+###  Advanced Features
 - **Markers**: Add, delete, and jump to custom markers in audio tracks
 - **A-B Looping**: Set loop points A and B for precise section looping
 - **Session Persistence**: Automatically saves and restores playback state
 - **Metadata Display**: Shows track title, artist, album, and duration
 - **Volume Control**: Independent volume control with mute functionality
 
-### 🎨 User Interface
+###  User Interface
 - **Modern Dark Theme**: Sleek, professional dark interface
 - **Scrollable Layout**: Smooth scrolling for dual player interface
 - **Responsive Design**: Clean, organized layout with intuitive controls
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Design Patterns
 
@@ -76,7 +76,7 @@ Source/
 └── WaveformDisplay.h/cpp # Waveform visualization component
 ```
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -105,7 +105,7 @@ Source/
    - Execute `assignment 2 El-Ramly.exe`
    - Or run directly from Visual Studio (F5)
 
-## 📖 Usage
+##  Usage
 
 ### Basic Playback
 
@@ -181,7 +181,7 @@ Source/
 - Low-latency audio processing
 - Automatic format detection and decoding
 
-## 📝 Code Quality
+## Code Quality
 
 - Clean, well-organized code structure
 - Object-oriented design principles
@@ -189,7 +189,7 @@ Source/
 - JUCE framework best practices
 - Memory-safe resource management
 
-## 🤝 Contributing
+## Contributing
 
 This is an educational project demonstrating:
 - Object-oriented programming principles
@@ -201,11 +201,7 @@ This is an educational project demonstrating:
 
 This project is provided for educational purposes.
 
-## 👤 Author
-
-**El-Ramly**
-
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **JUCE Framework**: For providing an excellent audio application framework
 - Design patterns and architecture based on software engineering best practices
